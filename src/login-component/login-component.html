@@ -1,0 +1,66 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-auth.html">
+
+<dom-module id="login-component">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <firebase-app
+      api-key="AIzaSyBsTFNAUwQVbSMFj9qgbIKMhfZr-EEEFAM",
+      auth-domain="bbva-auth-login.firebaseapp.com",
+      database-url="https://bbva-auth-login.firebaseio.com",
+      storage-bucket="bbva-auth-login.appspot.com">
+    </firebase-app>
+
+    <firebase-auth id="auth" user="{{user}}" provider="google" on-error="handleError"></firebase-auth>
+
+
+    <template is="dom-if" if={{!user}}>
+      <paper-button raised on-tap="login">Login</paper-button>
+    </template>
+
+    <template is="dom-if" if={{user}}>
+      <span> User logged as [[formatedUserEmail]] - [[user.email]]</span>
+      <paper-button raised on-tap="logout">LogOut</paper-button>
+    </template>
+
+  </template>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'login-component',
+
+      properties: {
+       user: Object,
+          formatedUserEmail: {
+            type: String,
+            computed: 'computeUserEmail(user)'
+          }
+        },
+
+        login: function() {
+          this.$.auth.signInWithPopup();
+        },
+
+        logout: function() {
+          this.$.auth.signOut();
+        },
+
+        handeError: function(error) {
+          console.log('Error ', error );
+        },
+
+        computeUserEmail: function(user) {
+          if (user) return this.user.email.split('@')[0];
+        }
+    });
+  </script>
+</dom-module>
